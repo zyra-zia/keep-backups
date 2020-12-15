@@ -7,7 +7,6 @@ RUN apt-get update && apt-get install -y curl && apt-get install -y sudo && apt-
 RUN curl https://rclone.org/install.sh | sudo bash
 
 # Install setup script for rclone config
-RUN wget https://raw.githubusercontent.com/zyra-zia/keep-backups/main/setup-conf.sh
+RUN wget https://raw.githubusercontent.com/zyra-zia/keep-backups/main/setup-conf.sh && chmod +x setup-conf.sh
 
-RUN chmod +x setup-conf.sh && ./setup-conf.sh
-
+CMD ./setup-conf.sh
