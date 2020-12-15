@@ -19,7 +19,7 @@ echo "$(date) backed up." >> /home/user/logs/sync.log
 EOF
 
 # Create a sync script
-cat > daily-backup.sh <<EOF
+cat > daily-sync.sh <<EOF
 #!/bin/sh
 
 rclone sync /persistence remote:bucket/sync --exclude 'keystore' --exclude 'trace.json' --exclude '.*{/**,}' --local-no-check-updated --create-empty-src-dirs --config /user-rclone.conf
