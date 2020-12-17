@@ -10,7 +10,7 @@ type = s3
 provider = AWS
 access_key_id = $ACCESS_KEY_ID
 secret_access_key = $SECRET_ACCESS_KEY
-region = us-east-1
+region = $REGION
 acl = private
 EOF
 fi
@@ -36,7 +36,7 @@ env_auth = false
 access_key_id = $ACCESS_KEY_ID
 secret_access_key = $SECRET_ACCESS_KEY
 region =
-endpoint = nyc3.digitaloceanspaces.com
+endpoint = $ENDPOINT
 location_constraint =
 acl =
 server_side_encryption =

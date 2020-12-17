@@ -11,10 +11,12 @@ class App extends React.Component {
       path: "",
       s3Access: "",
       s3Secret: "",
+      region: "",
       bbAccount: "",
       bbKey: "",
       spacesName: "",
-      spacesSecret: ""
+      spacesSecret: "",
+      spacesEndpoint: ""
     };
 
     this.handleType = this.handleType.bind(this);
@@ -25,12 +27,14 @@ class App extends React.Component {
     //s3
     this.handleS3Access = this.handleS3Access.bind(this);
     this.handleS3Secret = this.handleS3Secret.bind(this);
+    this.handleS3Region = this.handleS3Region.bind(this);
 
     //Backblaze
     this.handleBBAccount = this.handleBBAccount.bind(this);
     this.handleBBKey = this.handleBBKey.bind(this);
 
     //Digital Ocean Spaces
+    this.handleEndpoint = this.handleEndpoint.bind(this);
     this.handleSpacesName = this.handleSpacesName.bind(this);
     this.handleSpacesSecret = this.handleSpacesSecret.bind(this);
   }
@@ -42,6 +46,7 @@ class App extends React.Component {
   //S3
   handleS3Access(event){ this.setState({s3Access: event.target.value}); }
   handleS3Secret(event){ this.setState({s3Secret: event.target.value}); }
+  handleS3Region(event){ this.setState({region: event.target.value}); }
 
   //Backblaze
   handleBBAccount(event){ this.setState({bbAccount: event.target.value}); }
@@ -50,6 +55,7 @@ class App extends React.Component {
   //Spaces
   handleSpacesName(event){ this.setState({spacesName: event.target.value}); }
   handleSpacesSecret(event){ this.setState({spacesSecret: event.target.value}); }
+  handleEndpoint(event){ this.setState({spacesEndpoint: event.target.value}); }
 
   handleSubmit(event){
     event.preventDefault();
@@ -79,8 +85,8 @@ class App extends React.Component {
                   <div className="row g-3">
                     <select className="form-select" id="storage" required="" onChange={this.handleType}>
                       <option value="">Choose a Storage Option</option>
-                      <option value="b2">Backblaze B2</option>
                       <option value="s3">AWS S3</option>
+                      <option value="b2">Backblaze B2</option>
                       <option value="spaces">Digital Ocean Spaces</option>
                     </select>
                     <div className="col-12">
@@ -89,11 +95,15 @@ class App extends React.Component {
                     </div>
                     <div className="col-12">
                       <label htmlFor="bucket" className="form-label">Bucket or Space Name</label>
-                      <input type="text" className="form-control" id="bucket" placeholder="my-backblaze-bucket" required onChange={this.handleBucket}/>
+                      <input type="text" className="form-control" id="bucket" placeholder="my-bucket-name" required onChange={this.handleBucket}/>
                     </div>
 
                     {(this.state.type === "s3")?
                     <Fragment>
+                      <div className="col-12">
+                        <label htmlFor="region" className="form-label">Region</label>
+                        <input type="text" className="form-control" id="region" placeholder="us-east-1" required onChange={this.handleS3Region} />
+                      </div>
                       <div className="col-12">
                         <label htmlFor="access" className="form-label">Access Key Id</label>
                         <input type="text" className="form-control" id="access" placeholder="0123456789" required onChange={this.handleS3Access} />
@@ -123,6 +133,10 @@ class App extends React.Component {
                     {(this.state.type === "spaces")?
                      <Fragment>
                       <div className="col-12">
+                        <label htmlFor="endpoint" className="form-label">Endpoint</label>
+                        <input type="text" className="form-control" id="endpoint" placeholder="nyc3.digitaloceanspaces.com" required onChange={this.handleEndpoint} />
+                      </div> 
+                      <div className="col-12">
                         <label htmlFor="spaceKey" className="form-label">Space Key Name</label>
                         <input type="text" className="form-control" id="spaceKey" placeholder="MYSPACEKEYNAME" required onChange={this.handleSpacesName} />
                       </div>
@@ -143,7 +157,7 @@ class App extends React.Component {
                     </p>
                     <div className="col-12 generated">
                     {(this.state.type === "s3")?
-                      <textarea id="command" readOnly value={`docker run -dit --name backup-keep --mount type=bind,source=${this.state.path},target=/persistence --env BUCKET=${this.state.bucket} --env TYPE=${this.state.type} --env ACCESS_KEY_ID=${this.state.s3Access} --env SECRET_ACCESS_KEY=${this.state.s3Secret} zyggy/keep-backups`}/>
+                      <textarea id="command" readOnly value={`docker run -dit --name backup-keep --mount type=bind,source=${this.state.path},target=/persistence --env BUCKET=${this.state.bucket} --env TYPE=${this.state.type} --env REGION=${this.state.region} --env ACCESS_KEY_ID=${this.state.s3Access} --env SECRET_ACCESS_KEY=${this.state.s3Secret} zyggy/keep-backups`}/>
                       :
                       null
                     }
@@ -153,7 +167,7 @@ class App extends React.Component {
                       null
                     }
                     {(this.state.type === "spaces")?
-                      <textarea id="command" readOnly value={`docker run -dit --name backup-keep --mount type=bind,source=${this.state.path},target=/persistence --env BUCKET=${this.state.bucket} --env TYPE=${this.state.type} --env ACCESS_KEY_ID=${this.state.s3Access} --env SECRET_ACCESS_KEY=${this.state.s3Secret} zyggy/keep-backups`}/>
+                      <textarea id="command" readOnly value={`docker run -dit --name backup-keep --mount type=bind,source=${this.state.path},target=/persistence --env BUCKET=${this.state.bucket} --env TYPE=${this.state.type} --env ENDPOINT=${this.state.spacesEndpoint} --env ACCESS_KEY_ID=${this.state.s3Access} --env SECRET_ACCESS_KEY=${this.state.s3Secret} zyggy/keep-backups`}/>
                       :
                       null
                     }
