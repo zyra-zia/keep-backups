@@ -1,11 +1,15 @@
 import logo from './logo.svg';
 import React, { Fragment } from "react";
+import CopyToClipboard from "react-copy-to-clipboard";
+import ReactTooltip from 'react-tooltip';
 
 class App extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
+      value: '',
+      copied: false,
       type: "",
       bucket: "",
       path: "",
@@ -62,6 +66,17 @@ class App extends React.Component {
   }
 
   render() {
+
+    let command = "";
+    if(this.state.type === "s3"){
+      command = `docker run -dit --name backup-keep --mount type=bind,source=${this.state.path},target=/persistence --env BUCKET=${this.state.bucket} --env TYPE=${this.state.type} --env REGION=${this.state.region} --env ACCESS_KEY_ID=${this.state.s3Access} --env SECRET_ACCESS_KEY=${this.state.s3Secret} zyggy/keep-backups`;
+    }
+    else if(this.state.type === "spaces"){
+      command = `docker run -dit --name backup-keep --mount type=bind,source=${this.state.path},target=/persistence --env BUCKET=${this.state.bucket} --env TYPE=${this.state.type} --env ENDPOINT=${this.state.spacesEndpoint} --env ACCESS_KEY_ID=${this.state.spacesName} --env SECRET_ACCESS_KEY=${this.state.spacesSecret} zyggy/keep-backups`;
+    }
+    else {
+      command = `docker run -dit --name backup-keep --mount type=bind,source=${this.state.path},target=/persistence --env BUCKET=${this.state.bucket} --env TYPE=${this.state.type} --env ACCOUNT=${this.state.bbAccount} --env KEY=${this.state.bbKey} zyggy/keep-backups`;
+    }
 
     return (
       <div className="App bg-light">
@@ -156,18 +171,37 @@ class App extends React.Component {
                       Please copy the command below and run it in the server running your keep beacon or ecdsa node
                     </p>
                     <div className="col-12 generated">
+                    <CopyToClipboard text={command}
+                      onCopy={() => this.setState({copied: true})}>
+                      <button id="btn-clipboard" className="btn-clipboard" title="" data-tip data-for="tooltip" 
+                      data-original-title="Copy to clipboard" type="button" 
+                      onClick={()=>{ 
+                        document.getElementById("tooltipSpan").textContent = "Copied";
+                      }} 
+                      onMouseLeave={()=>{ 
+                        document.getElementById("tooltipSpan").textContent = "Copy to Clipboard";
+                      }} 
+                      >Copy</button>
+                    </CopyToClipboard>
+                    <ReactTooltip id="tooltip" effect='solid'>
+                      <span id="tooltipSpan">Copy to Clipboard</span>
+                      </ReactTooltip>
+
                     {(this.state.type === "s3")?
-                      <textarea id="command" readOnly value={`docker run -dit --name backup-keep --mount type=bind,source=${this.state.path},target=/persistence --env BUCKET=${this.state.bucket} --env TYPE=${this.state.type} --env REGION=${this.state.region} --env ACCESS_KEY_ID=${this.state.s3Access} --env SECRET_ACCESS_KEY=${this.state.s3Secret} zyggy/keep-backups`}/>
+                      <textarea id="command" readOnly 
+                      value={command}/>
                       :
                       null
                     }
                     {(this.state.type === "b2" || this.state.type === "")?
-                      <textarea id="command" readOnly value={`docker run -dit --name backup-keep --mount type=bind,source=${this.state.path},target=/persistence --env BUCKET=${this.state.bucket} --env TYPE=${this.state.type} --env ACCOUNT=${this.state.bbAccount} --env KEY=${this.state.bbKey} zyggy/keep-backups`}/>
+                      <textarea id="command" readOnly 
+                      value={command}/>
                       :
                       null
                     }
                     {(this.state.type === "spaces")?
-                      <textarea id="command" readOnly value={`docker run -dit --name backup-keep --mount type=bind,source=${this.state.path},target=/persistence --env BUCKET=${this.state.bucket} --env TYPE=${this.state.type} --env ENDPOINT=${this.state.spacesEndpoint} --env ACCESS_KEY_ID=${this.state.s3Access} --env SECRET_ACCESS_KEY=${this.state.s3Secret} zyggy/keep-backups`}/>
+                      <textarea id="command" readOnly 
+                      value={command}/>
                       :
                       null
                     }
