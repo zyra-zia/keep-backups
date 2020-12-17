@@ -80,8 +80,8 @@ class App extends React.Component {
                     <select className="form-select" id="storage" required="" onChange={this.handleType}>
                       <option value="">Choose a Storage Option</option>
                       <option value="b2">Backblaze B2</option>
-                      <option value="s3" disabled>AWS S3 - Coming Soon</option>
-                      <option value="spaces" disabled>Digital Ocean Spaces - Coming Soon</option>
+                      <option value="s3">AWS S3</option>
+                      <option value="spaces">Digital Ocean Spaces</option>
                     </select>
                     <div className="col-12">
                       <label htmlFor="location" className="form-label">Persistence Folder Location</label>
